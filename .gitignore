@@ -115,3 +115,16 @@ fabric.properties
 .idea/**/azureSettings.xml
 
 # End of https://www.toptal.com/developers/gitignore/api/intellij
+
+# IntelliJ IDEA / Android Studio
+.idea/
+*.iml
+
+# Gradle / Kotlin caches and build outputs
+.gradle/
+.kotlin/
+build/
+out/
+
+# Local Android SDK path
+local.properties
