@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -15,6 +16,9 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.androidbook.bookmarket.cart.CartActivity
+import com.androidbook.bookmarket.model.Book
+import com.androidbook.bookmarket.model.CartRepository
 
 class BookActivity : AppCompatActivity() {
         lateinit var imgObj: ImageView
@@ -27,7 +31,7 @@ class BookActivity : AppCompatActivity() {
         lateinit var categoryObj: TextView
 
         lateinit var cartplusObj: Button
-        lateinit var cartCount: TextView
+        private var cartCount: TextView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,8 +91,17 @@ class BookActivity : AppCompatActivity() {
             val listener = DialogInterface.OnClickListener { dialogInterface, i ->
                 when (i) {
                     DialogInterface.BUTTON_POSITIVE -> {
-                        var count = Integer.parseInt(cartCount.text.toString()) + 1
-                        cartCount.text = count.toString()
+                        val book = Book().apply {
+                            bookid = bookidObj.text.toString()
+                            name = nameObj.text.toString()
+                            price = priceObj.text.toString().toInt()
+                            date = dateObj.text.toString()
+                            writer = writerObj.text.toString()
+                            description = descriptionObj.text.toString()
+                            category = categoryObj.text.toString()
+                        }
+                        CartRepository.addCartItems(book)
+                        updateCartCount()
                         dialogInterface.dismiss()
                     }
 
@@ -104,11 +117,32 @@ class BookActivity : AppCompatActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        updateCartCount()
+    }
+
+    private fun updateCartCount() {
+        cartCount?.text = CartRepository.countCartItems().toString()
+    }
+
     override fun onCreateOptionsMenu(menu : Menu?) : Boolean {
         val inflater : MenuInflater = menuInflater
         inflater.inflate(R.menu.menu_book, menu)
 
-        return super.onCreateOptionsMenu(menu)
+        val cartItem = menu?.findItem(R.id.menu_cart)
+        cartItem?.setActionView(R.layout.cart_count_layout)
+        val cartView = cartItem?.actionView
+        cartCount = cartView?.findViewById(R.id.cart_count)
+        cartView?.setOnClickListener {
+            startActivity(Intent(this, CartActivity::class.java))
+        }
+        cartView?.findViewById<View>(R.id.cart_image)?.setOnClickListener {
+            startActivity(Intent(this, CartActivity::class.java))
+        }
+        updateCartCount()
+
+        return true
     }
 
     override fun onOptionsItemSelected(item : MenuItem) : Boolean {
@@ -136,7 +170,7 @@ class BookActivity : AppCompatActivity() {
             }
 
             R.id.menu_cart -> {
-                Toast.makeText(applicationContext, "장바구니 메뉴를 클릭하였습니다", Toast.LENGTH_LONG).show()
+                startActivity(Intent(this, CartActivity::class.java))
 
                 return true
             }
