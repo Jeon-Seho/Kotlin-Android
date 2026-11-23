@@ -2,8 +2,12 @@ package com.androidbook.bookmarket
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
+import android.widget.SearchView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -19,7 +23,6 @@ class BooksActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_books)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.books)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -32,12 +35,10 @@ class BooksActivity : AppCompatActivity() {
         book3Obj = findViewById(R.id.book3)
         book4Obj = findViewById(R.id.book4)
 
-
         book1Obj = findViewById(R.id.book1)
         book2Obj = findViewById(R.id.book2)
         book3Obj = findViewById(R.id.book3)
         book4Obj = findViewById(R.id.book4)
-
 
         book1Obj.setOnClickListener {
             Toast.makeText(getApplicationContext(), "쉽게 배우는 알고리즘", Toast.LENGTH_LONG).show()
@@ -58,6 +59,8 @@ class BooksActivity : AppCompatActivity() {
             Toast.makeText(getApplicationContext(), "미라클 HTML5 + CSS3 + 자바스크립트", Toast.LENGTH_LONG).show()
             BookItem4()
         }
+
+        getSupportActionBar()?.setDisplayHomeAsUpEnabled(true)
     }
 
     fun BookItem1() {
@@ -118,5 +121,64 @@ class BooksActivity : AppCompatActivity() {
         )
         intent.putExtra("category", "IT/모바일")
         startActivity(intent)
+    }
+
+    override fun onCreateOptionsMenu(menu : Menu?) : Boolean {
+        val inflater : MenuInflater = menuInflater
+        inflater.inflate(R.menu.menu_books, menu)
+
+        val searchItem : MenuItem? = menu?.findItem(R.id.menu_search)
+        val searchView : SearchView = searchItem?.actionView as SearchView
+
+        searchView.queryHint = "도서명을 입력해주세요."
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query : String) : Boolean {
+                Toast.makeText(applicationContext, query, Toast.LENGTH_LONG).show()
+
+                return false
+            }
+
+            override fun onQueryTextChange(newText : String) : Boolean {
+                return false
+            }
+        })
+
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressed()
+            }
+
+            R.id.menu_home -> {
+                Toast.makeText(applicationContext, "홈으로 메뉴를 클릭하였습니다", Toast.LENGTH_LONG).show()
+                finish()
+                val intent : Intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+
+                return true
+            }
+
+            R.id.main_video -> {
+                Toast.makeText(applicationContext,"동영상강좌 메뉴를 클릭하였습니다",Toast.LENGTH_LONG).show()
+
+                return true
+            }
+            R.id.menu_customer -> {
+                Toast.makeText(applicationContext,"고객센터 메뉴를 클릭하였습니다",Toast.LENGTH_LONG).show()
+
+                return true
+            }
+            R.id.menu_mypage -> {
+                Toast.makeText(applicationContext,"마이페이지 메뉴를 클릭하였습니다",Toast.LENGTH_LONG).show()
+
+                return true
+            }
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 }
