@@ -13,7 +13,7 @@
 
     <item
             android:id="@+id/menu_cart"
-            android:icon="@drawable/icon_cart"
+            android:actionLayout="@layout/cart_count_layout"
             android:title="장바구니"
             app:showAsAction="always"/>
 </menu>
